@@ -1,8 +1,13 @@
 import openpyxl
-import process_data
+# import process_data
 from openpyxl.styles import PatternFill
-import time
 from datetime import datetime
+import csv
+
+
+yellow = "ffff6d"
+red = "ff6d6d"
+green = "afd095"
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 output_dir = "output"
@@ -28,6 +33,18 @@ def create_workbook(version = 'a'):
 def load_workbook(version = 'a'):
     return openpyxl.load_workbook(file_path('a'))
 
+def csv_to_sheet(sheet, workbook, version = 'a'):
+    with open(output_dir + '/' + sheet + '.csv') as f:
+        reader = csv.reader(f, delimiter=',')
+        for row in reader:
+            workbook[sheet].append(row)
+    workbook.save(filename = file_path(version))
+
+def pretty_output(sheet, workbook, version = 'a'):
+    csv_to_sheet('sp', workbook, version)
+    csv_to_sheet('ps', workbook, version)
+    diff_sheet(sheet, workbook, version)
+
 def export_row(row, sheet, workbook, version = 'a'):
     workbook[sheet].append(row)
     workbook.save(filename = file_path(version))
@@ -43,14 +60,17 @@ def diff_sheet(sheet, workbook, version = 'a'):
         for (cell, cell_ps, cell_sp) in zip(col, col_ps, col_sp):
            ps = int(cell_ps.value) 
            sp = int(cell_sp.value)
-           cell_ps.fill = PatternFill(start_color='%02x%02x%02x' % (255 - ps, 255 - ps, 255), fill_type = "solid")
-           cell_sp.fill = PatternFill(start_color='%02x%02x%02x' % (255 - sp, 255, 255 - sp), fill_type = "solid")
+           cell_ps.fill = PatternFill(start_color = '%02x%02x%02x' % (255 - ps, 255 - ps, 255), fill_type = "solid")
+           cell_sp.fill = PatternFill(start_color = '%02x%02x%02x' % (255 - sp, 255, 255 - sp), fill_type = "solid")
            if cell_ps.value == cell_sp.value:#colorize cell yellow
-               cell.fill = PatternFill(start_color="ffff6d", fill_type = "solid")
+               cell.fill = PatternFill(start_color = yellow, fill_type = "solid")
            if cell_ps.value > cell_sp.value:#colorize cell red
-               cell.fill = PatternFill(start_color="ff6d6d", fill_type = "solid")
+               cell.fill = PatternFill(start_color = red, fill_type = "solid")
            if cell_ps.value < cell_sp.value:#colorize cell green
-               cell.fill = PatternFill(start_color="afd095", fill_type = "solid")
+               cell.fill = PatternFill(start_color = green, fill_type = "solid")
     workbook.save(filename = file_path(version))
 
+def export(row, name):
+    with open(output_dir + "/"+ name + ".csv", 'a') as f:
+        csv.writer(f).writerow(row)
 # diff_sheet('ps', wb)
