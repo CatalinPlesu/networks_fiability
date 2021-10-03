@@ -1,7 +1,8 @@
 import openpyxl
-import process_data
+# import process_data
 from openpyxl.styles import PatternFill
 from datetime import datetime
+import csv
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 output_dir = "output"
@@ -27,6 +28,18 @@ def create_workbook(version = 'a'):
 def load_workbook(version = 'a'):
     return openpyxl.load_workbook(file_path('a'))
 
+def csv_to_sheet(sheet, workbook, version = 'a'):
+    with open(output_dir + '/' + sheet + '.csv') as f:
+        reader = csv.reader(f, delimiter=',')
+        for row in reader:
+            workbook[sheet].append(row)
+    workbook.save(filename = file_path(version))
+
+def pretty_output(sheet, workbook, version = 'a'):
+    csv_to_sheet('sp', workbook, version)
+    csv_to_sheet('ps', workbook, version)
+    diff_sheet(sheet, workbook, version)
+
 def export_row(row, sheet, workbook, version = 'a'):
     workbook[sheet].append(row)
     workbook.save(filename = file_path(version))
@@ -51,5 +64,7 @@ def diff_sheet(sheet, workbook, version = 'a'):
            if cell_ps.value < cell_sp.value:#colorize cell green
                cell.fill = PatternFill(start_color="afd095", fill_type = "solid")
     workbook.save(filename = file_path(version))
+
+
 
 # diff_sheet('ps', wb)

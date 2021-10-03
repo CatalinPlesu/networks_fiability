@@ -2,16 +2,15 @@
 import random
 import csv
 from datetime import datetime
-from os import mkdir
+import os
 import time
 from output_data import *
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 
-# creaza folder pentru datele de iesire
 output_dir = "output"
 try:
-    mkdir(output_dir)
+    os.mkdir(output_dir)
     print("output dir created") 
 except:
     pass
@@ -38,7 +37,7 @@ def matrix_section(matrix, M, N, m = 0, n = 0):
 def test_a(M, N):
     global file_prefix 
     file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
-    wb = create_workbook('a')
+    # wb = create_workbook('a')
 
     for m in range(1, M + 1):
         ps_line = []
@@ -50,16 +49,23 @@ def test_a(M, N):
             sp_line.append(sp)
             ps_line.append(ps)
             print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        # export(sp_line, "sp_a")
-        # export(ps_line, "ps_a")
-        export_row(sp_line, 'sp', wb)
-        export_row(ps_line, 'ps', wb)
-    diff_sheet('ps', wb)
+        export(sp_line, "sp")
+        export(ps_line, "ps")
+        # export_row(sp_line, 'sp', wb)
+        # export_row(ps_line, 'ps', wb)
+    # diff_sheet('ps', wb)
+
+def clean_output():
+    try:
+        os.remove(output_dir + "/"+ "ps.csv")
+        os.remove(output_dir + "/"+ "sp.csv")
+    except:
+        pass
 
 def test_b(M, N):
     global file_prefix 
     file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
-    wb = create_workbook('b')
+    # wb = create_workbook('b')
 
     general = random_circuit(M, N)
     for m in range(1, M + 1):
@@ -72,14 +78,14 @@ def test_b(M, N):
             sp_line.append(sp)
             ps_line.append(ps)
             print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        # export(sp_line, "sp_b")
-        # export(sp_line, "ps_b")
-        export_row(sp_line, 'sp', wb, 'b')
-        export_row(ps_line, 'ps', wb, 'b')
-    diff_sheet('ps', wb, 'b')
+        export(sp_line, "sp")
+        export(ps_line, "ps")
+        # export_row(sp_line, 'sp', wb, 'b')
+        # export_row(ps_line, 'ps', wb, 'b')
+    # diff_sheet('ps', wb, 'b')
 
 def export(row, name):
-    with open(output_dir + "/"+file_prefix + name + ".csv", 'a') as f:
+    with open(output_dir + "/"+ name + ".csv", 'a') as f:
         csv.writer(f).writerow(row)
 
 def print_matrix(m):
@@ -87,19 +93,34 @@ def print_matrix(m):
         print(*n)
 
 if __name__ == "__main__":
-    print("Date de intrare")
-    m = get_input()
-    print_matrix(m)
+    # print("Date de intrare")
+    # m = get_input()
+    # print_matrix(m)
 
-    print("Serie - Paralel", SP(m))
-    print("Paralel - Serie", PS(m))
+    # print("Serie - Paralel", SP(m))
+    # print("Paralel - Serie", PS(m))
 
+    M = random.randrange(20, 100)
+    N = random.randrange(20, 100)
     start = time.time()
-    test_a(100, 100)
+    test_a(M, N)
     end = time.time()
     print("test A execution time", end-start)
+    
+    start = time.time()
+    wb_a = create_workbook('a')
+    pretty_output('sp', wb_a, 'a')
+    clean_output()
+    end = time.time()
+    print("convert A execution time", end-start)
 
     start = time.time()
-    test_b(100, 100)
+    test_b(M, N)
     end = time.time()
     print("test B execution time", end-start)
+
+    wb_b = create_workbook('b')
+    pretty_output('sp', wb_b, 'b')
+    clean_output()
+    end = time.time()
+    print("convert B execution time", end-start)
