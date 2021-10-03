@@ -1,7 +1,6 @@
 import openpyxl
 import process_data
 from openpyxl.styles import PatternFill
-import time
 from datetime import datetime
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")

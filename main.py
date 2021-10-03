@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 from os import mkdir
 import time
+from output_data import *
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 
@@ -37,7 +38,8 @@ def matrix_section(matrix, M, N, m = 0, n = 0):
 def test_a(M, N):
     global file_prefix 
     file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
-    line = ["m\\n"] + list(range(1, N + 1))
+    wb = create_workbook('a')
+
     for m in range(1, M + 1):
         ps_line = []
         sp_line = []
@@ -48,13 +50,17 @@ def test_a(M, N):
             sp_line.append(sp)
             ps_line.append(ps)
             print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        export(sp_line, "sp_a")
-        export(ps_line, "ps_a")
+        # export(sp_line, "sp_a")
+        # export(ps_line, "ps_a")
+        export_row(sp_line, 'sp', wb)
+        export_row(ps_line, 'ps', wb)
+    diff_sheet('ps', wb)
 
 def test_b(M, N):
     global file_prefix 
     file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
-    line = ["m\\n"] + list(range(1, N + 1))
+    wb = create_workbook('b')
+
     general = random_circuit(M, N)
     for m in range(1, M + 1):
         ps_line = []
@@ -66,8 +72,11 @@ def test_b(M, N):
             sp_line.append(sp)
             ps_line.append(ps)
             print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        export(sp_line, "sp_b")
-        export(sp_line, "ps_b")
+        # export(sp_line, "sp_b")
+        # export(sp_line, "ps_b")
+        export_row(sp_line, 'sp', wb, 'b')
+        export_row(ps_line, 'ps', wb, 'b')
+    diff_sheet('ps', wb, 'b')
 
 def export(row, name):
     with open(output_dir + "/"+file_prefix + name + ".csv", 'a') as f:
