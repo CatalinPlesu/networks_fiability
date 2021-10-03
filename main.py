@@ -30,7 +30,7 @@ def PS(m):
 def random_circuit(m, n):
     return [[random.randrange(1, 100) for i in range(n)] for j in range(m)]
 
-# petru a obtine o subsectiune dintr-o matrice mai mare
+# to get a portion of the matrix
 def matrix_section(matrix, M, N, m = 0, n = 0):
     return [e[n:N] for e in matrix[m:M]]
 
