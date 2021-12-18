@@ -27,6 +27,10 @@ def create_workbook(version = 'a'):
     ws_sp.sheet_properties.tabColor = "99c39e"
     ws_ps.sheet_properties.tabColor = "89cdd3"
     ws_fav.sheet_properties.tabColor = "d3869b"
+
+    global file_prefix 
+    file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
+
     wb.save(filename = file_path(version))
     return wb
 
@@ -67,6 +71,10 @@ def diff_sheet(sheet, workbook, version = 'a'):
            except:
                ps = 0
                sp = 0
+           if ps > 255:
+               ps = 255
+           if sp > 255:
+               sp = 255
            cell_ps.fill = PatternFill(start_color = '%02x%02x%02x' % (255 - ps, 255 - ps, 255), fill_type = "solid")
            cell_sp.fill = PatternFill(start_color = '%02x%02x%02x' % (255 - sp, 255, 255 - sp), fill_type = "solid")
            if cell_ps.value == cell_sp.value:#colorize cell yellow
