@@ -33,6 +33,8 @@ def PS(m):
 def random_circuit(m, n, N_const, distribution):
     if distribution == "Uniform":
         circuit = np.random.uniform(1, 100, (m, n))
+    if distribution == "Poisson":
+        circuit = np.random.poisson(50, (m, n))
     else:
         circuit = np.random.normal(50, 15, (m, n))
     return abs(circuit)
@@ -49,7 +51,7 @@ def teorie_m_n(m, n):
     return "ps/sp"
 
 
-def test_a(M, N, N_const, distribution):
+def monte_carlo(M, N, N_const, distribution):
     clean_output()
     
     export(["M\\N"] + list(range(1, N + 1)), "sp")
@@ -82,13 +84,13 @@ def print_matrix(m):
     for n in m:
         print(*n)
 
-def execute_experiment(M, N, N_const=True, distribution="Normal"):
-    test_a(M, N, N_const, distribution) # generates tables for ps and ps + fav teorem result
-    wb_a = create_workbook('a') # convert 3 csv files to xsxl 
-    pretty_output('sp', wb_a, 'a') # apply's diff function to color data
+def execute_experiment(M, N, N_const, distribution):
+    monte_carlo(M, N, N_const, distribution) # generates tables for ps and ps + fav teorem result
+    wb_a = create_workbook(distribution) # convert 3 csv files to xsxl 
+    pretty_output('sp', wb_a, distribution) # apply's diff function to color data
     clean_output() # remove auxiliar csv files
 
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
-    execute_experiment(args.M, args.N, args.b_N_const)
+    execute_experiment(args.M, args.N, args.b_N_const, args.distribution)

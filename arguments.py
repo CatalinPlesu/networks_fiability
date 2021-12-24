@@ -25,7 +25,7 @@ parser.add_argument('--n_non_const', action='store_false', default=True,
 
 parser.add_argument("--distribution", default='Normal',
         help="""Tipul distributiei aplicate elementelor retelei,
-optiuni: Normal, Poisson, ...
+optiuni: Normal, Poisson, Uniform, ...
 implicit - Normal
 """
         , metavar="Nume")

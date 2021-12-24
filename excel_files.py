@@ -66,8 +66,8 @@ def diff_sheet(sheet, workbook, version = 'a'):
     for (col, col_ps, col_sp, col_fav) in zip(workbook['diff'], workbook['ps'], workbook['sp'], workbook['fav']):
         for (cell, cell_ps, cell_sp, cell_fav) in zip(col, col_ps, col_sp, col_fav):
            try:
-               ps = int(cell_ps.value) 
-               sp = int(cell_sp.value)
+               ps = int(float(cell_ps.value))
+               sp = int(float(cell_sp.value))
            except:
                ps = 0
                sp = 0

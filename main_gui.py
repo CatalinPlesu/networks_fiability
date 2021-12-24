@@ -47,8 +47,8 @@ class External(QThread):
             export(sp_line, "sp")
             export(ps_line, "ps")
             export(fav_line, "fav")
-        wb_a = create_workbook('a') # convert 3 csv files to xsxl 
-        pretty_output('sp', wb_a, 'a') # apply's diff function to color data
+        wb_a = create_workbook(distribution) # convert 3 csv files to xsxl 
+        pretty_output('sp', wb_a, distribution) # apply's diff function to color data
         clean_output() # remove auxiliar csv files
         # done set status bar to 100
         self.countChanged.emit(100) # line for status bar
@@ -70,6 +70,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.comboBox_distribution = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox_distribution.setObjectName("comboBox_distribution")
+        self.comboBox_distribution.addItem("")
         self.comboBox_distribution.addItem("")
         self.comboBox_distribution.addItem("")
         self.gridLayout_3.addWidget(self.comboBox_distribution, 4, 0, 1, 1)
@@ -183,6 +184,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate(TITLE, TITLE))
         self.comboBox_distribution.setItemText(0, _translate(TITLE, "Normal"))
         self.comboBox_distribution.setItemText(1, _translate(TITLE, "Poisson"))
+        self.comboBox_distribution.setItemText(2, _translate(TITLE, "Uniform"))
         self.label_n.setText(_translate(TITLE, "N - elemente in subretea"))
         self.label_m.setText(_translate(TITLE, "M - subretele"))
         self.label_distribution.setText(_translate(TITLE, "Distribution type:"))

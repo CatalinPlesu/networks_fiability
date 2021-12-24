@@ -33,6 +33,11 @@
       </item>
       <item>
        <property name="text">
+        <string>Uniform</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Poisson</string>
        </property>
       </item>

@@ -25,6 +25,7 @@ class Ui_MainWindow(object):
         self.comboBox_distribution.setObjectName("comboBox_distribution")
         self.comboBox_distribution.addItem("")
         self.comboBox_distribution.addItem("")
+        self.comboBox_distribution.addItem("")
         self.gridLayout_3.addWidget(self.comboBox_distribution, 4, 0, 1, 1)
         self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
         self.progressBar.setProperty("value", 0)
@@ -126,7 +127,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.comboBox_distribution.setItemText(0, _translate("MainWindow", "Normal"))
-        self.comboBox_distribution.setItemText(1, _translate("MainWindow", "Poisson"))
+        self.comboBox_distribution.setItemText(1, _translate("MainWindow", "Uniform"))
+        self.comboBox_distribution.setItemText(2, _translate("MainWindow", "Poisson"))
         self.label_n.setText(_translate("MainWindow", "N - elemente in subretea"))
         self.label_m.setText(_translate("MainWindow", "M - subretele"))
         self.label_distribution.setText(_translate("MainWindow", "Distribution type:"))
@@ -142,13 +144,3 @@ class Ui_MainWindow(object):
         self.actionImport_example.setText(_translate("MainWindow", "Import example"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionClean_output_dir.setText(_translate("MainWindow", "Clean output dir."))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
