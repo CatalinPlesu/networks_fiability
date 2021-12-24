@@ -1,5 +1,6 @@
 #!/bin/python
 import random
+import numpy as np
 import csv
 import os
 import time
@@ -30,19 +31,11 @@ def PS(m):
     return max([min(n) for n in m])
 
 def random_circuit(m, n, N_const, distribution):
-    circuit = []
-    for j in range(m):
-        sub_network = []
-        for i in range(n if N_const else random.randrange(1, n + 1)):
-            sub_network.append(random.randrange(1, 100))
-        circuit.append(sub_network)
-    return circuit
-
-# def random_circuit(m, n):
-#     return [[random.randrange(1, 100) for i in range(n)] for j in range(m)]
-
-# def random_circuit_rn(m, n):
-#     return [[random.randrange(1, 100) for i in range(random.randrange(1, n + 1))] for j in range(m)]
+    if distribution == "Uniform":
+        circuit = np.random.uniform(1, 100, (m, n))
+    else:
+        circuit = np.random.normal(50, 15, (m, n))
+    return abs(circuit)
 
 # to get a portion of the matrix
 def matrix_section(matrix, M, N, m = 0, n = 0):
@@ -76,24 +69,6 @@ def test_a(M, N, N_const, distribution):
         export(sp_line, "sp")
         export(ps_line, "ps")
         export(fav_line, "fav")
-
-def test_b(M, N):
-    clean_output()
-
-    general = random_circuit(M, N)
-
-    export(["M\\N"] + list(range(1, N + 1)), "sp")
-    export(["M\\N"] + list(range(1, N + 1)), "ps")
-    for m in range(1, M + 1):
-        ps_line = [m]
-        sp_line = [m]
-        for n in range(1, N + 1):
-            curent = matrix_section(general, m, n)
-            sp_line.append(SP(curent))
-            ps_line.append(PS(curent))
-            print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        export(sp_line, "sp")
-        export(ps_line, "ps")
 
 def clean_output():
     try:
