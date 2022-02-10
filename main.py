@@ -13,7 +13,7 @@ file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 output_dir = "output"
 try:
     os.mkdir(output_dir)
-    print("output dir created") 
+    print("output dir created")
 except:
     pass
 
