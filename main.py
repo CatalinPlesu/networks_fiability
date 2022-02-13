@@ -10,90 +10,112 @@ from modules.excel_files import *
 from modules.arguments import *
 from modules.file_browser import open_file_browser
 
-file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
+# file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 
-output_dir = "output"
-try:
-    os.mkdir(output_dir)
-    print("output dir created")
-except:
-    print("couldnt create dir")
-    pass
-
-def get_input(file_name = 'input.txt'):
-    with open(file_name, 'r') as f:
-        return [[float(num) for num in line.split(' ')] for line in f]
-
-#subretele
-# Serie - Paralel
-def SP(m):
-    return min([max(n) for n in m])
-
-# Paralel - Serie
-def PS(m):
-    return max([min(n) for n in m])
-
-def random_circuit(m, n, N_const, distribution):
-    if distribution == "Uniform":
-        circuit = np.random.uniform(1, 100, (m, n))
-    if distribution == "Poisson":
-        circuit = np.random.poisson(50, (m, n))
-    else:
-        circuit = np.random.normal(50, 15, (m, n))
-    return abs(circuit)
-
-# to get a portion of the matrix
-def matrix_section(matrix, M, N, m = 0, n = 0):
-    return [e[n:N] for e in matrix[m:M]]
-
-def teorie_m_n(m, n):
-    if max(n) < m or min(n) < m:
-        return "ps"
-    if max(n) > m or min(n) > m:
-        return "sp"
-    return "ps/sp"
+# output_dir = "output"
+# try:
+#     os.mkdir(output_dir)
+#     print("output dir created")
+# except:
+#     print("couldnt create dir")
+#     pass
 
 
-def monte_carlo(M, N, N_const, distribution):
-    clean_output()
-    
-    export(["M\\N"] + list(range(1, N + 1)), "sp")
-    export(["M\\N"] + list(range(1, N + 1)), "ps")
-    export(["M\\N"] + list(range(1, N + 1)), "fav")
-    for m in range(1, M + 1):
-        print("progress:", m/(M+M*0.2) * 100, end="\r")
-        ps_line = [m]
-        sp_line = [m]
-        fav_line = [m]
-        for n in range(1, N + 1):
-            circuit = random_circuit(m, n, N_const, distribution)
-            sp_line.append(SP(circuit))
-            ps_line.append(PS(circuit))
-            fav_line.append(teorie_m_n(m, [len(x) for x in circuit]))
-            # print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-        export(sp_line, "sp")
-        export(ps_line, "ps")
-        export(fav_line, "fav")
 
-def clean_output():
-    try:
-        os.remove(output_dir + "/"+ "ps.csv")
-        os.remove(output_dir + "/"+ "sp.csv")
-        os.remove(output_dir + "/"+ "fav.csv")
-    except:
-        pass
 
-def print_matrix(m):
-    for n in m:
-        print(*n)
+# def execute_experiment(M, N, N_const, distribution):
+#     monte_carlo(M, N, N_const, distribution) # generates tables for ps and ps + fav teorem result
+#     wb_a = create_workbook(distribution) # convert 3 csv files to xsxl
+#     pretty_output('sp', wb_a, distribution) # apply's diff function to color data
+#     clean_output() # remove auxiliar csv files
 
-def execute_experiment(M, N, N_const, distribution):
-    monte_carlo(M, N, N_const, distribution) # generates tables for ps and ps + fav teorem result
-    wb_a = create_workbook(distribution) # convert 3 csv files to xsxl 
-    pretty_output('sp', wb_a, distribution) # apply's diff function to color data
-    clean_output() # remove auxiliar csv files
+class Network:
+    def __init__(self, m_subnetworks: int = 10, n_elements: int = 10, b_n_const: bool = True, distribution: str = "Normal"):
+        self.m_subnetworks = m_subnetworks
+        self.n_elements = n_elements
+        self.b_n_const = b_n_const
+        self.distribution = distribution.lower()
+        self.network = self.generate_network()
+
+    def generate_network(self, m: int = None, n: int = None, b_n_const: bool = None, distribution: str = None):
+        if m  is None:
+            m  = self.m_subnetworks
+        if n  is None:
+            n  = self.n_elements 
+        if b_n_const  is None:
+            b_n_const  = self.b_n_const
+        if distribution  is None:
+            distribution  = self.distribution
+
+        if distribution == "uniform":
+            network = np.random.uniform(1, 100, (m, n))
+        elif self.distribution == "poisson":
+            network = np.random.poisson(50, (m, n))
+        else:
+            network = np.random.normal(50, 15, (m, n))
+        return abs(network)
+
+    # subnetworks (subretele)
+    # m - number of subnetworks
+    # n - number of elements in a subnetwork
+    def series_parallel(self, network = None):
+        if network is None:
+            network = self.network
+        return min([max(subnetwork) for subnetwork in network])
+
+    def parallel_series(self, network = None):
+        if network is None:
+            network = self.network
+        return max([min(subnetwork) for subnetwork in network])
+
+    def m_n__theorem(self, network = None):
+        if network is None:
+            network = self.network
+        n = [len(x) for x in network]
+        n_max = max(n)
+        n_min = min(n)
+        if self.series_parallel(network) < self.parallel_series(network):
+            return "P"
+        elif self.series_parallel(network) > self.parallel_series(network): 
+            return "S"
+        else:
+            return "B"
+        # other option we  could compare series_parallel parallel_series
+        # if n_max < self.m_subnetworks or n_min < self.m_subnetworks:
+        #     return "P"
+        # if n_max > self.m_subnetworks or n_min > self.m_subnetworks:
+        #     return "S"
+        # return "B"
+
+    def print(self, matrix = None):
+        if matrix is None:
+            matrix = self.network
+        for line in matrix:
+            print(*line)
+
+    def monte_carlo(self):
+        self.ps_matrix, self.sp_matrix, self.fav_matrix = [], [], []
+        for m in range(1, self.m_subnetworks + 1):
+            print("progress:", m / (self.m_subnetworks * 1.2) * 100, end="\r")
+            ps_line = []
+            sp_line = []
+            fav_line = []
+            for n in range(1, self.n_elements + 1):
+                network = self.generate_network(m, n, self.b_n_const, self.distribution)
+                sp_line.append(self.series_parallel(network))
+                ps_line.append(self.parallel_series(network))
+                fav_line.append(self.m_n__theorem(network))
+            self.ps_matrix.append(ps_line)
+            self.sp_matrix.append(sp_line)
+            self.fav_matrix.append(fav_line)
+
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    print(args)
-    execute_experiment(args.M, args.N, args.b_N_const, args.distribution)
+    network = Network()
+    network.generate_network()
+    network.monte_carlo()
+    print()
+    network.print(network.fav_matrix)
+    # args = parser.parse_args()
+    # print(args)
+    # execute_experiment(args.M, args.N, args.b_N_const, args.distribution)

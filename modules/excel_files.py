@@ -2,7 +2,6 @@ import openpyxl
 # import process_data
 from openpyxl.styles import PatternFill
 from datetime import datetime
-import csv
 
 
 yellow = "ffff6d"
@@ -93,11 +92,3 @@ def diff_sheet(sheet, workbook, version = 'a'):
     workbook.save(filename = file_path(version))
 
 # diff_sheet('ps', wb)
-
-def export(row, name):
-    with open(output_dir + "/"+ name + ".csv", 'a') as f:
-        csv.writer(f).writerow(row)
-
-def export_t(row, name):
-    with open(name + ".csv", 'a') as f:
-        csv.writer(f).writerow(row)
