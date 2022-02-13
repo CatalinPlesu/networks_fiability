@@ -2,13 +2,13 @@ import openpyxl
 from openpyxl.styles import PatternFill
 from datetime import datetime
 import os
+import random
 
 yellow = "ffff6d"
 red = "ff6d6d"
 green = "afd095"
 
-
-file_prefix = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
+file_prefix = random.random()
 output_dir = "output"
 
 try:
@@ -20,7 +20,7 @@ except:
 
 
 def file_path(distribution: str):
-    return os.path.join(output_dir, f"{file_prefix}_{distribution}.xlsx")
+    return os.path.join(output_dir, f"{distribution}_{file_prefix}.xlsx")
 
 def create_workbook(distribution: str):
     wb = openpyxl.Workbook() 
@@ -36,7 +36,7 @@ def create_workbook(distribution: str):
     ws_fav.sheet_properties.tabColor = "d3869b"
 
     global file_prefix 
-    file_prefix = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
+    file_prefix = random.random()
 
     wb.save(filename = file_path(distribution))
     return wb
