@@ -3,7 +3,7 @@
 
 ## installation
 ```
-pip install openpyxl
+pip install numpy openpyxl pyqt5
 ```
 possible pyqt5
 

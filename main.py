@@ -1,12 +1,14 @@
 #!/bin/python
-import random
-import numpy as np
-import csv
-import os
-import time
 from datetime import datetime
-from excel_files import *
-from arguments import *
+import numpy as np
+import os
+import shutil
+import sys
+import time
+
+from modules.excel_files import *
+from modules.arguments import *
+from modules.file_browser import open_file_browser
 
 file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
 
@@ -15,6 +17,7 @@ try:
     os.mkdir(output_dir)
     print("output dir created")
 except:
+    print("couldnt create dir")
     pass
 
 def get_input(file_name = 'input.txt'):
