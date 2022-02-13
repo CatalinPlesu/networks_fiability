@@ -7,21 +7,25 @@ parser = argparse.ArgumentParser(description="""
 """,
         formatter_class=argparse.RawTextHelpFormatter)
 
-parser.add_argument("-m", type=int, default=150, dest='M',
+parser.add_argument("-m", type=int, default=50, dest='m',
         help="""Numarul de subretele,
-M implicit - 150
+m implicit - 50
 """,
         metavar="int")
 
-parser.add_argument("-n", type=int, default=150, dest='N',
+parser.add_argument("-n", type=int, default=50, dest='n',
         help="""Numarul de elemente in subretela,
-N implicit - 150
+n implicit - 50
 """,
         metavar="int")
 
 parser.add_argument('--n_non_const', action='store_false', default=True,
-        help="""N va varia in fiecare subretela
-        """, dest='b_N_const')
+        help="""n va varia in fiecare subretela
+        """, dest='b_n_const')
+
+parser.add_argument('--no_gui', action='store_false', default=True,
+        help="""terminal mode
+        """, dest='b_gui')
 
 parser.add_argument("--distribution", default='Normal',
         help="""Tipul distributiei aplicate elementelor retelei,

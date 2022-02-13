@@ -6,28 +6,9 @@ import shutil
 import sys
 import time
 
-from modules.excel_files import *
+from modules.export import *
 from modules.arguments import *
-from modules.file_browser import open_file_browser
-
-# file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
-
-# output_dir = "output"
-# try:
-#     os.mkdir(output_dir)
-#     print("output dir created")
-# except:
-#     print("couldnt create dir")
-#     pass
-
-
-
-
-# def execute_experiment(M, N, N_const, distribution):
-#     monte_carlo(M, N, N_const, distribution) # generates tables for ps and ps + fav teorem result
-#     wb_a = create_workbook(distribution) # convert 3 csv files to xsxl
-#     pretty_output('sp', wb_a, distribution) # apply's diff function to color data
-#     clean_output() # remove auxiliar csv files
+from gui import *
 
 class Network:
     def __init__(self, m_subnetworks: int = 10, n_elements: int = 10, b_n_const: bool = True, distribution: str = "Normal"):
@@ -38,13 +19,13 @@ class Network:
         self.network = self.generate_network()
 
     def generate_network(self, m: int = None, n: int = None, b_n_const: bool = None, distribution: str = None):
-        if m  is None:
+        if m is None:
             m  = self.m_subnetworks
-        if n  is None:
+        if n is None:
             n  = self.n_elements 
-        if b_n_const  is None:
+        if b_n_const is None:
             b_n_const  = self.b_n_const
-        if distribution  is None:
+        if distribution is None:
             distribution  = self.distribution
 
         if distribution == "uniform":
@@ -80,7 +61,6 @@ class Network:
             return "S"
         else:
             return "B"
-        # other option we  could compare series_parallel parallel_series
         # if n_max < self.m_subnetworks or n_min < self.m_subnetworks:
         #     return "P"
         # if n_max > self.m_subnetworks or n_min > self.m_subnetworks:
@@ -94,28 +74,27 @@ class Network:
             print(*line)
 
     def monte_carlo(self):
-        self.ps_matrix, self.sp_matrix, self.fav_matrix = [], [], []
+        ps_matrix, sp_matrix, fav_matrix = [], [], []
         for m in range(1, self.m_subnetworks + 1):
             print("progress:", m / (self.m_subnetworks * 1.2) * 100, end="\r")
-            ps_line = []
-            sp_line = []
-            fav_line = []
+            ps_line, sp_line, fav_line = [], [], []
             for n in range(1, self.n_elements + 1):
                 network = self.generate_network(m, n, self.b_n_const, self.distribution)
                 sp_line.append(self.series_parallel(network))
                 ps_line.append(self.parallel_series(network))
                 fav_line.append(self.m_n__theorem(network))
-            self.ps_matrix.append(ps_line)
-            self.sp_matrix.append(sp_line)
-            self.fav_matrix.append(fav_line)
+            ps_matrix.append(ps_line)
+            sp_matrix.append(sp_line)
+            fav_matrix.append(fav_line)
 
+        wb_a = create_workbook(self.distribution)
+        pretty_output('sp', wb_a, self.distribution, sp_matrix, ps_matrix, fav_matrix) 
 
 if __name__ == "__main__":
-    network = Network()
-    network.generate_network()
-    network.monte_carlo()
-    print()
-    network.print(network.fav_matrix)
-    # args = parser.parse_args()
-    # print(args)
-    # execute_experiment(args.M, args.N, args.b_N_const, args.distribution)
+    args = parser.parse_args()
+    print(args)
+    if args.b_gui:
+        start_gui()
+    else:
+        network = Network(args.m, args.n, args.b_n_const, args.distribution)
+        network.monte_carlo()

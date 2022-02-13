@@ -3,11 +3,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 import sys
+import subprocess
 import time
 import shutil
 import os
 from main import *
-from file_browser import open_file_browser
 
 MAX_VALUE = 500
 DEFAULT_VALUE = 150
@@ -17,41 +17,35 @@ TITLE = "APA proiect de AN"
 class External(QThread):
     countChanged = pyqtSignal(int)
 
-    def __init__(self, M, N, N_const, distribution, parent=None):
+    def __init__(self, m, n, b_n_const, distribution, parent=None):
         QThread.__init__(self, parent)
-        self.M = M
-        self.N = N
-        self.N_const = N_const
+        self.m_subnetworks = m
+        self.n_elements = n
+        self.b_n_const = b_n_const
         self.distribution = distribution
     
     def run(self):
-        self.countChanged.emit(0) # line for status bar
-        M, N, N_const, distribution = self.M, self.N, self.N_const, self.distribution
+        self.countChanged.emit(0) 
 
+        network_obj = Network(self.m_subnetworks, self.n_elements, self.b_n_const, self.distribution)
 
-        clean_output()
-        export(["M\\N"] + list(range(1, N + 1)), "sp")
-        export(["M\\N"] + list(range(1, N + 1)), "ps")
-        export(["M\\N"] + list(range(1, N + 1)), "fav")
-        for m in range(1, M + 1):
-            self.countChanged.emit(int(m/(M + 15)*100)) # line for status bar
-            ps_line = [m]
-            sp_line = [m]
-            fav_line = [m]
-            for n in range(1, N + 1):
-                circuit = random_circuit(m, n, N_const, distribution)
-                sp_line.append(SP(circuit))
-                ps_line.append(PS(circuit))
-                fav_line.append(teorie_m_n(m, [len(x) for x in circuit]))
-                # print("progress:", ((m - 1) * N + n) / (M * N) , end="\r")
-            export(sp_line, "sp")
-            export(ps_line, "ps")
-            export(fav_line, "fav")
-        wb_a = create_workbook(distribution) # convert 3 csv files to xsxl 
-        pretty_output('sp', wb_a, distribution) # apply's diff function to color data
-        clean_output() # remove auxiliar csv files
-        # done set status bar to 100
-        self.countChanged.emit(100) # line for status bar
+        ps_matrix, sp_matrix, fav_matrix = [], [], []
+        for m in range(1, self.m_subnetworks + 1):
+            self.countChanged.emit(int(m / (self.m_subnetworks * 1.2) * 100))
+            ps_line, sp_line, fav_line = [], [], []
+            for n in range(1, self.n_elements + 1):
+                network = network_obj.generate_network(m, n)
+                sp_line.append(network_obj.series_parallel(network))
+                ps_line.append(network_obj.parallel_series(network))
+                fav_line.append(network_obj.m_n__theorem(network))
+            ps_matrix.append(ps_line)
+            sp_matrix.append(sp_line)
+            fav_matrix.append(fav_line)
+
+        wb_a = create_workbook(self.distribution)
+        pretty_output('sp', wb_a, self.distribution, sp_matrix, ps_matrix, fav_matrix) 
+
+        self.countChanged.emit(100) 
 
 
 
@@ -245,7 +239,7 @@ coordonator: Veronica Bagrin""")
         msg.setStandardButtons(QMessageBox.Ok)
         x = msg.exec_()
 
-if __name__ == "__main__":
+def start_gui():
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
@@ -253,3 +247,20 @@ if __name__ == "__main__":
     MainWindow.show()
     sys.exit(app.exec_())
 
+def open_file_browser(directory):
+    if sys.platform=='win32':
+        subprocess.Popen(['start', directory], shell= True)
+
+    elif sys.platform=='darwin':
+        subprocess.Popen(['open', directory])
+
+    else:
+        try:
+            subprocess.Popen(['xdg-open', directory])
+        except OSError:
+            print("You shoud check the'", directory,
+                    "'folder, but I can't open it for you")
+            pass
+
+if __name__ == "__main__":
+    start_gui()

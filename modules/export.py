@@ -1,20 +1,28 @@
 import openpyxl
-# import process_data
 from openpyxl.styles import PatternFill
 from datetime import datetime
-
+import os
 
 yellow = "ffff6d"
 red = "ff6d6d"
 green = "afd095"
 
-file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
+
+file_prefix = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
 output_dir = "output"
 
-def file_path(file = ""):
-    return output_dir + "/"+file_prefix + file + ".xlsx"
+try:
+    os.mkdir(output_dir)
+    print(f" folderul '{output_dir}' a fost creata")
+except:
+    print(f"nu a putut fi creat folderul'{output_dir}'")
+    pass
 
-def create_workbook(version = 'a'):
+
+def file_path(distribution: str):
+    return os.path.join(output_dir, f"{file_prefix}_{distribution}.xlsx")
+
+def create_workbook(distribution: str):
     wb = openpyxl.Workbook() 
     ws = wb.active
     ws = wb['Sheet']
@@ -28,36 +36,25 @@ def create_workbook(version = 'a'):
     ws_fav.sheet_properties.tabColor = "d3869b"
 
     global file_prefix 
-    file_prefix = datetime.now().strftime("%d-%m-%Y_%H:%M:%S_")
+    file_prefix = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
 
-    wb.save(filename = file_path(version))
+    wb.save(filename = file_path(distribution))
     return wb
 
 # wb = create_workbook()
 
-def load_workbook(version = 'a'):
-    return openpyxl.load_workbook(file_path('a'))
+def include_data(sheet, workbook, distribution, matrix):
+    for row in matrix:
+        workbook[sheet].append(row)
+    workbook.save(filename = file_path(distribution))
 
-def csv_to_sheet(sheet, workbook, version = 'a'):
-    with open(output_dir + '/' + sheet + '.csv') as f:
-        reader = csv.reader(f, delimiter=',')
-        for row in reader:
-            workbook[sheet].append(row)
-    workbook.save(filename = file_path(version))
+def pretty_output(sheet, workbook, distribution, sp, ps, fav):
+    include_data('sp', workbook, distribution, sp)
+    include_data('ps', workbook, distribution, ps)
+    include_data('fav', workbook, distribution, fav)
+    diff_sheet(sheet, workbook, distribution)
 
-def pretty_output(sheet, workbook, version = 'a'):
-    csv_to_sheet('sp', workbook, version)
-    csv_to_sheet('ps', workbook, version)
-    csv_to_sheet('fav', workbook, version)
-    diff_sheet(sheet, workbook, version)
-
-def export_row(row, sheet, workbook, version = 'a'):
-    workbook[sheet].append(row)
-    workbook.save(filename = file_path(version))
-
-# export_row([1,2,3,4,5], 'sp', wb)
-
-def diff_sheet(sheet, workbook, version = 'a'):
+def diff_sheet(sheet, workbook, distribution):
     for row in workbook[sheet]:
         for cell in row:
             workbook['diff'][cell.coordinate].value = cell.value
@@ -78,17 +75,17 @@ def diff_sheet(sheet, workbook, version = 'a'):
            cell_sp.fill = PatternFill(start_color = '%02x%02x%02x' % (255 - sp, 255, 255 - sp), fill_type = "solid")
            if cell_ps.value == cell_sp.value:#colorize cell yellow
                cell.fill = PatternFill(start_color = yellow, fill_type = "solid")
-               cell_fav.fill = PatternFill(start_color = yellow, fill_type = "solid")
-           if cell_ps.value > cell_sp.value:#colorize cell red
+               # cell_fav.fill = PatternFill(start_color = yellow, fill_type = "solid")
+           elif cell_ps.value > cell_sp.value:#colorize cell red
                cell.fill = PatternFill(start_color = red, fill_type = "solid")
-               if cell_fav.value == 'sp':
-                   cell_fav.fill = PatternFill(start_color = red, fill_type = "solid")
-           if cell_ps.value < cell_sp.value:#colorize cell green
+               if cell_fav.value == "P":
+                   cell_fav.fill = PatternFill(start_color = yellow, fill_type = "solid")
+           elif cell_ps.value < cell_sp.value:#colorize cell green
                cell.fill = PatternFill(start_color = green, fill_type = "solid")
-               if cell_fav.value == 'ps':
+               if cell_fav.value == "S":
                    cell_fav.fill = PatternFill(start_color = red, fill_type = "solid")
-           if cell_fav.value == "ps/sp":
+           if cell_fav.value == "B":
                cell_fav.fill = PatternFill(start_color = green, fill_type = "solid")
-    workbook.save(filename = file_path(version))
+    workbook.save(filename = file_path(distribution))
 
 # diff_sheet('ps', wb)
