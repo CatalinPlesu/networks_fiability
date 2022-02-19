@@ -42,12 +42,14 @@ class Network:
     def series_parallel(self, network = None):
         if network is None:
             network = self.network
-        return min([max(subnetwork) for subnetwork in network])
+        # return min([max(subnetwork) for subnetwork in network])
+        return network.max(axis=1).min()
 
     def parallel_series(self, network = None):
         if network is None:
             network = self.network
-        return max([min(subnetwork) for subnetwork in network])
+        # return max([min(subnetwork) for subnetwork in network])
+        return network.min(axis=1).max()
 
     def m_n__theorem(self, network = None):
         if network is None:
@@ -93,7 +95,7 @@ class Network:
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
-    if args.b_gui:
+    if args.b_gui and sys.argv == 1:
         start_gui()
     else:
         network = Network(args.m, args.n, args.b_n_const, args.distribution)
