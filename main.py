@@ -95,7 +95,7 @@ class Network:
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
-    if args.b_gui and sys.argv == 1:
+    if args.b_gui and len(sys.argv) == 1:
         start_gui()
     else:
         network = Network(args.m, args.n, args.b_n_const, args.distribution)
