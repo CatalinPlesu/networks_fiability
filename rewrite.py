@@ -10,11 +10,12 @@ import time
 from json_config import load_settings
 sett = load_settings()
 
-# subnetworks (subretele)
-# m - number of subnetworks
-# n - number of elements in a subnetwork
-
 class Network:
+    """
+    A network is made of subnetworks 
+    m - number of subnetworks
+    n - number of elements in a subnetwork
+    """
     def __init__(self, m: int = 50, n: int = 50, n_const: bool = True, 
             n_list: list = None, distribution: str = "Normal"):
         self.m = m
@@ -31,7 +32,6 @@ class Network:
         self.distribution = distribution
         self.generate_network()
 
-
     def print(self):
         print()
         print(f"distribution : {self.distribution.capitalize()}")
@@ -39,7 +39,6 @@ class Network:
         print(f"N list : {self.n_list}")
         for line in self.matrix:
             print(line)
-
 
     def generate_network(self):
         distribution = self.distribution.lower()
@@ -55,26 +54,25 @@ class Network:
                 network.append(np.random.normal(50, 15, self.n_list[i]))
         self.matrix =  abs(list_to_array(network))
 
-def fiability_sp(network):
-    "Series Parallel"
-    return np.array([subnetwork.max() for subnetwork in network]).min()
-
-def fiability_ps(network):
-    "Parallel Series"
-    return np.array([subnetwork.min() for subnetwork in network]).max()
 
 def list_to_array(matrix):
     return np.array([np.array(row) for row in matrix], dtype=object)
 
-def m_n__theorem( network = None):
-    if network is None:
-        network = network
+def fiability_sp(network):
+    "Series Parallel"
+    return np.array([subnetwork.max() for subnetwork in network.matrix]).min()
+
+def fiability_ps(network):
+    "Parallel Series"
+    return np.array([subnetwork.min() for subnetwork in network.matrix]).max()
+
+def m_n__theorem(network):
     n = [len(x) for x in network]
     n_max = max(n)
     n_min = min(n)
-    if series_parallel(network) < parallel_series(network):
+    if fiability_sp(network) < fiability_ps(network):
         return "P"
-    elif series_parallel(network) > parallel_series(network): 
+    elif fiability_sp(network) > fiability_ps(network): 
         return "S"
     else:
         return "B"

@@ -2,35 +2,42 @@ from rewrite import *
 
 
 def test_fiability_sp():
-    assert 3 == fiability_sp(list_to_array([
+    network = Network()
+    network.matrix = list_to_array([
         [5, 3, 2],
         [5, 3, 4],
         [3, 2, 3],
-        ]))
+        ])
+    assert 3 == fiability_sp(network)
 
 def test_fiability_sp1():
-    assert 3 == fiability_sp(list_to_array([
+    network = Network()
+    network.matrix = list_to_array([
             [5, 4, 3, 2, 1],
             [6, 4, 3, 2],
             [3, 2, 3],
             [9],
-        ]))
+        ])
+    assert 3 == fiability_sp(network)
 
 def test_fiability_ps():
-    assert 3 == fiability_ps(list_to_array([
+    network = Network()
+    network.matrix = list_to_array([
         [5, 3, 2],
         [5, 3, 4],
         [3, 2, 3],
-        ]))
-
+        ])
+    assert 3 == fiability_ps(network)
 
 def test_fiability_ps1():
-    assert 9 == fiability_ps(list_to_array([
+    network = Network()
+    network.matrix = list_to_array([
             [5, 4, 3, 2, 1],
             [6, 4, 3, 2],
             [3, 2, 3],
             [9],
-        ]))
+        ])
+    assert 9 == fiability_ps(network)
 
 def test_generate_network_uniform():
     network = Network(3, 4, True, None, "Uniform")
