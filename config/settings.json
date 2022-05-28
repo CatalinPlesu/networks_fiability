@@ -1,0 +1,33 @@
+{
+    "window": {
+        "title": "Networks Fiability",
+        "font": "FiraCode.ttf",
+        "font_size": 18,
+        "width": 800,
+        "height": 600
+    },
+    "network": {
+        "m_label": "M - Subnetworks",
+        "m_min": 1,
+        "m_max": 1000,
+        "m_default": 50,
+        "n_label": "N - Elements",
+        "n_min": 1,
+        "n_max": 1000,
+        "n_default": 50,
+        "distr_label": "Distributions",
+        "distributions": [
+            "Normal",
+            "Poisson",
+            "Uniform"
+        ]
+    },
+    "output": {
+        "colors": {
+            "yellow": "ffff6d",
+            "red": "ff6d6d",
+            "green": "afd095"
+        },
+        "dir": "output"
+    }
+}
