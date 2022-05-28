@@ -44,12 +44,13 @@ def random_n_callback(sender, app_data, user_data):
 
     else:
         total = dpg.get_value(m_slider)
+        value = dpg.get_value(n_slider)
         i = 0
         while i <= total:
             with dpg.group(parent=elements, horizontal=True):
                 second = 0
                 while second != sett['window']['columns']:
-                    n_elements.append(dpg.add_input_int(width=100))
+                    n_elements.append(dpg.add_input_int(default_value=value, width=100))
                     i += 1
                     second += 1
 
@@ -74,7 +75,7 @@ with dpg.window(tag="Primary Window"):
         dpg.add_menu_item(label="About")
 
     dpg.add_text("Number of subnetworks in current network")
-    m_slider = dpg.add_slider_int(label=sett['network']['m_label'], 
+    m_slider = dpg.add_drag_int(label=sett['network']['m_label'], 
             default_value=sett['network']['m_default'], 
             min_value=sett['network']['m_min'], 
             max_value=sett['network']['m_max'])
@@ -83,7 +84,7 @@ with dpg.window(tag="Primary Window"):
 
     n_checkbox = dpg.add_checkbox(label="N is Constant", default_value=True, callback=variable_n_callback)
 
-    n_slider = dpg.add_slider_int(label=sett['network']['n_label'], 
+    n_slider = dpg.add_drag_int(label=sett['network']['n_label'], 
             default_value=sett['network']['n_default'], 
             min_value=sett['network']['n_min'], 
             max_value=sett['network']['n_max'])
