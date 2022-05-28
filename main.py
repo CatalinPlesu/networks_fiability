@@ -40,25 +40,34 @@ class Network:
         print(f"N const : {tcolor(str(self.n_const), color='yellow')}")
         print(f"N list : {tcolor(str(self.n_list), color='blue')}")
 
-        sp = round(fiability_sp(self), 2)
-        ps = round(fiability_ps(self), 2)
+        sp = round(fiability_sp(self), 6)
+        ps = round(fiability_ps(self), 6)
+
+        high = "#eec0f0"; highest = "#f56ef0"; low = "#84d7f5"; lowest = "#6f99a8"
 
         for i, row in enumerate(self.matrix):
             print(tcolor(f"Sub.Net. {i}", color='yellow'), end=": "),
-            for cell in row:
-                aprox = round(cell, 2) 
+            min_j = row.argmin()
+            max_j = row.argmax()
+            for j, cell in enumerate(row):
+                aprox = round(cell, 6) 
                 cell = round(cell, 1)
                 if aprox == sp:
-                    print(tcolor(f"{cell}", color='red'), end=", ")
+                    print(tcolor(f"{cell}", color=highest, styles=['invert']), end=", ")
                 elif aprox == ps:
-                    print(tcolor(f"{cell}", color='green'), end=", ")
+                    print(tcolor(f"{cell}", color=lowest, styles=['invert']), end=", ")
+                elif j == min_j:
+                    print(tcolor(f"{cell}", color=low, styles=['invert']), end=", ")
+                elif j == max_j:
+                    print(tcolor(f"{cell}", color=high, styles=['invert']), end=", ")
                 else:
                     print(cell, end=", ")
             print()
 
-
-        print(f"Series Paralell : {sp}")
-        print(f"Paralell Series : {ps}")
+        ss = tcolor("Series", color=low, styles=['invert']) 
+        pp = tcolor("Paralell", color=high, styles=['invert']) 
+        print(f"""{ss} {pp} : {tcolor(f"{sp}", color=highest, styles=['invert'])}""")
+        print(f"""{pp} {ss} : {tcolor(f"{ps}", color=lowest, styles=['invert'])}""")
 
     def generate_network(self):
         distribution = self.distribution.lower()
