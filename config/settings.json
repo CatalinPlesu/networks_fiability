@@ -4,7 +4,8 @@
         "font": "FiraCode.ttf",
         "font_size": 18,
         "width": 800,
-        "height": 600
+        "height": 600,
+        "columns": 8
     },
     "network": {
         "m_label": "M - Subnetworks",

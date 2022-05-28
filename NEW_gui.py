@@ -12,7 +12,44 @@ def start_btn_callback(sender, app_data, user_data):
     print(f"M slider : {dpg.get_value(m_slider)}")
     print(f"N slider : {dpg.get_value(n_slider)}")
     print(f"Distribution : {dpg.get_value(distribution)}")
+    for i, n in enumerate(n_elements):
+        print(f"{dpg.get_value(n)}, ", end="")
+
+    count = dpg.get_value(progress)
+    while count < 1:
+        count = count + 0.01
+        dpg.set_value(progress, count)
+    dpg.set_value(progress, 0)
+
     
+n_elements = []
+def variable_n_callback(sender, app_data, user_data):
+    global n_elements 
+    if app_data:
+        for item in dpg.get_item_children(elements)[1]:
+            dpg.delete_item(item)
+
+    else:
+        dpg.add_checkbox(label="Random values for each n", default_value=True, callback=random_n_callback, parent=elements)
+
+def random_n_callback(sender, app_data, user_data):
+    global n_elements 
+    if app_data:
+        for item in dpg.get_item_children(elements)[1]:
+            dpg.delete_item(item)
+        n_elements = []
+        dpg.add_checkbox(label="Random values for each n", default_value=True, callback=random_n_callback, parent=elements)
+
+    else:
+        total = dpg.get_value(m_slider)
+        i = 0
+        while i <= total:
+            with dpg.group(parent=elements, horizontal=True):
+                second = 0
+                while second != settings['window']['columns']:
+                    n_elements.append(dpg.add_input_int(width=100))
+                    i += 1
+                    second += 1
 
 with dpg.window(tag="Primary Window"):
 
@@ -20,9 +57,8 @@ with dpg.window(tag="Primary Window"):
 
         with dpg.menu(label="Menu"):
 
-            dpg.add_text("This menu is just for show!")
-            dpg.add_menu_item(label="Reset")
-            dpg.add_menu_item(label="Open Output Directory")
+            dpg.add_menu_item(label="Open output directory")
+            dpg.add_menu_item(label="Clean output directory")
 
         with dpg.menu(label="Tools"):
             dpg.add_menu_item(label="Show About")
@@ -31,29 +67,34 @@ with dpg.window(tag="Primary Window"):
             dpg.add_menu_item(label="Show Debug")
 
         with dpg.menu(label="Settings"):
-            dpg.add_menu_item(label="Wait For Input", check=True)
-            dpg.add_menu_item(label="Toggle Fullscreen")
+            dpg.add_menu_item(label="Open settings window")
 
         dpg.add_menu_item(label="About")
 
-    dpg.add_text("Hello, world")
-    
+    dpg.add_text("Number of subnetworks in current network")
     m_slider = dpg.add_slider_int(label=settings['network']['m_label'], 
             default_value=settings['network']['m_default'], 
             min_value=settings['network']['m_min'], 
             max_value=settings['network']['m_max'])
+
+    dpg.add_text("Number of elements per subnetwork")
+
+    n_checkbox = dpg.add_checkbox(label="N is Constant", default_value=True, callback=variable_n_callback)
 
     n_slider = dpg.add_slider_int(label=settings['network']['n_label'], 
             default_value=settings['network']['n_default'], 
             min_value=settings['network']['n_min'], 
             max_value=settings['network']['n_max'])
 
+    with dpg.group() as elements:
+        pass
+
     distribution = dpg.add_combo(items=settings['network']['distributions'],
             default_value=settings['network']['distributions'][0],
             label=settings['network']['distr_label'])
 
     with dpg.group(horizontal=True):
-        dpg.add_progress_bar(default_value=0.78, overlay="1367/1753")
+        progress = dpg.add_progress_bar(default_value=0.0)
         dpg.add_button(label="Start", callback=start_btn_callback)
 
 with dpg.font_registry():

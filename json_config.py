@@ -10,6 +10,7 @@ settings = {
         "font_size": 18,
         "width": 800,
         "height": 600,
+        "columns": 8,
         },
 
     "network": {
