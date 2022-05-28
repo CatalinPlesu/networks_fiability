@@ -1,19 +1,33 @@
-# proiect de an la analiza si proiectarea algoritmilor
+# Network Fiability
 
-
-## installation
+## Usage
+#### create a  virtual enviroment
 ```
-pip install numpy openpyxl pyqt5
+python -m venv venv
 ```
-possible pyqt5
 
-## usage
+### activate virtual enviroment (bash)
+```
+source venv/bin/activate
+```
+
+### activate virtual enviroment (windows power shell)
+```
+source venv/bin/Activate.ps1
+```
+
+#### installation dependencies
+```
+pip install -r requirements.txt
+```
+
+### execution
 ```
 python main.py
 
 ```
 
-## options
+## CLI arguments
 ```
 options:
   -h, --help           show this help message and exit
