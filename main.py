@@ -1,98 +1,134 @@
 #!/usr/bin/env python
 from datetime import datetime
 import numpy as np
-import os
-import shutil
-import sys
-import time
+from tcolorpy import tcolor
 
-from modules.export import *
-from modules.arguments import *
+# from helpers.json_config import load_settings
+
+from helpers import *
+sett = load_settings()
+# from helpers.arguments import *
 
 class Network:
-    def __init__(self, m_subnetworks: int = 10, n_elements: int = 10, b_n_const: bool = True, distribution: str = "Normal"):
-        self.m_subnetworks = m_subnetworks
-        self.n_elements = n_elements
-        self.b_n_const = b_n_const
-        self.distribution = distribution.lower()
-        self.network = self.generate_network()
+    """
+                    A network is made of subnetworks 
+                    m - number of subnetworks
+                    n - number of elements in a subnetwork
+    """
+    def __init__(self, m: int = 50, n: int = 50, n_const: bool = True, 
+            n_list: list = None, distribution: str = "Normal"):
+        if n_list != None:
+            n_const = False
 
-    def generate_network(self, m: int = None, n: int = None, b_n_const: bool = None, distribution: str = None):
-        if m is None:
-            m  = self.m_subnetworks
-        if n is None:
-            n  = self.n_elements 
-        if b_n_const is None:
-            b_n_const  = self.b_n_const
-        if distribution is None:
-            distribution  = self.distribution
+        self.m = m
+        self.n = n
+        self.n_const = n_const
 
+        if not n_list or len(n_list) < m:
+            self.n_list = [np.random.randint(1, sett['network']['n_max_rand']) for _ in range(m)]
+        elif n_const:
+            self.n_list = [n for _ in range(m)]
+        else:
+            self.n_list = n_list[:m]
+
+        self.distribution = distribution
+        self.generate_network()
+
+    def print(self):
+        print()
+        print(f"distribution : {tcolor(self.distribution.capitalize(), color='green')}")
+        print(f"N const : {tcolor(str(self.n_const), color='yellow')}")
+        print(f"N list : {tcolor(str(self.n_list), color='blue')}")
+
+        sp = round(fiability_sp(self), 2)
+        ps = round(fiability_ps(self), 2)
+
+        for i, row in enumerate(self.matrix):
+            print(tcolor(f"Sub.Net. {i}", color='yellow'), end=": "),
+            for cell in row:
+                aprox = round(cell, 2) 
+                cell = round(cell, 1)
+                if aprox == sp:
+                    print(tcolor(f"{cell}", color='red'), end=", ")
+                elif aprox == ps:
+                    print(tcolor(f"{cell}", color='green'), end=", ")
+                else:
+                    print(cell, end=", ")
+            print()
+
+
+        print(f"Series Paralell : {sp}")
+        print(f"Paralell Series : {ps}")
+
+    def generate_network(self):
+        distribution = self.distribution.lower()
+        network = []
         if distribution == "uniform":
-            network = np.random.uniform(1, 100, (m, n))
-        elif self.distribution == "poisson":
-            network = np.random.poisson(50, (m, n))
+            for i in range(self.m):
+                network.append(np.random.uniform(1, 100, self.n_list[i]))
+        elif distribution == "poisson":
+            for i in range(self.m):
+                network.append(np.random.poisson(50, self.n_list[i]))
         else:
-            network = np.random.normal(50, 15, (m, n))
-        return abs(network)
+            for i in range(self.m):
+                network.append(np.random.normal(50, 15, self.n_list[i]))
+        self.matrix =  abs(list_to_array(network))
 
-    # subnetworks (subretele)
-    # m - number of subnetworks
-    # n - number of elements in a subnetwork
-    def series_parallel(self, network = None):
-        if network is None:
-            network = self.network
-        # return min([max(subnetwork) for subnetwork in network])
-        return network.max(axis=1).min()
 
-    def parallel_series(self, network = None):
-        if network is None:
-            network = self.network
-        # return max([min(subnetwork) for subnetwork in network])
-        return network.min(axis=1).max()
+def list_to_array(matrix):
+    return np.array([np.array(row) for row in matrix], dtype=object)
 
-    def m_n__theorem(self, network = None):
-        if network is None:
-            network = self.network
-        n = [len(x) for x in network]
-        n_max = max(n)
-        n_min = min(n)
-        if self.series_parallel(network) < self.parallel_series(network):
-            return "P"
-        elif self.series_parallel(network) > self.parallel_series(network): 
-            return "S"
-        else:
-            return "B"
-        # if n_max < self.m_subnetworks or n_min < self.m_subnetworks:
-        #     return "P"
-        # if n_max > self.m_subnetworks or n_min > self.m_subnetworks:
-        #     return "S"
-        # return "B"
+def fiability_sp(network):
+    "Series Parallel"
+    return np.array([subnetwork.max() for subnetwork in network.matrix]).min()
 
-    def print(self, matrix = None):
-        if matrix is None:
-            matrix = self.network
-        for line in matrix:
-            print(*line)
+def fiability_ps(network):
+    "Parallel Series"
+    return np.array([subnetwork.min() for subnetwork in network.matrix]).max()
 
-    def monte_carlo(self):
-        ps_matrix, sp_matrix, fav_matrix = [], [], []
-        for m in range(1, self.m_subnetworks + 1):
-            print("progress:", m / (self.m_subnetworks * 1.2) * 100, end="\r")
-            ps_line, sp_line, fav_line = [], [], []
-            for n in range(1, self.n_elements + 1):
-                network = self.generate_network(m, n, self.b_n_const, self.distribution)
-                sp_line.append(self.series_parallel(network))
-                ps_line.append(self.parallel_series(network))
-                fav_line.append(self.m_n__theorem(network))
-            ps_matrix.append(ps_line)
-            sp_matrix.append(sp_line)
-            fav_matrix.append(fav_line)
+def m_n__theorem(network):
+    if fiability_sp(network) < fiability_ps(network):
+        return "P"
+    elif fiability_sp(network) > fiability_ps(network): 
+        return "S"
+    else:
+        return "B"
 
-        wb_a = create_workbook(self.distribution)
-        pretty_output('sp', wb_a, self.distribution, sp_matrix, ps_matrix, fav_matrix) 
+
+def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
+        n_list: list = None, distribution: str = "Normal"):
+    """
+                experiment to prove that theorem X is true
+    """
+    ps_matrix, sp_matrix, theorem_validation_matrix = [], [], []
+
+    for m in range(1, max_m + 1):
+        print("progress:", m / (max_m * 1.2) * 100, end="\r")
+        ps_line, sp_line, theorem_line = [], [], []
+        for n in range(1, max_n + 1):
+            network = Network(m, n, n_const, n_list, distribution)
+            sp_line.append(fiability_sp(network))
+            ps_line.append(fiability_ps(network))
+            theorem_line.append(m_n__theorem(network))
+        ps_matrix.append(ps_line)
+        sp_matrix.append(sp_line)
+        theorem_validation_matrix.append(theorem_line)
+
+    wb_a = create_workbook(distribution)
+    pretty_output(wb_a, distribution, sp_matrix, ps_matrix, theorem_validation_matrix) 
+
+
+# for distr in sett['network']['distributions']:
+#     monte_carlo(50, 50, True, None, distribution=distr)
+
 
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
-    network = Network(args.m, args.n, args.b_n_const, args.distribution)
-    network.monte_carlo()
+    if args.gui:
+        start_gui()
+    if args.single:
+        network = Network(args.m, args.n, args.n_const, args.n_list, args.distribution)
+        network.print()
+    else:
+        monte_carlo(args.m, args.n, args.n_const, args.n_list, args.distribution)

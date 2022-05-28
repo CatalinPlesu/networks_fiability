@@ -1,4 +1,4 @@
-from rewrite import *
+from main import *
 
 
 def test_fiability_sp():
