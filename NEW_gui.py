@@ -4,7 +4,7 @@ import dearpygui.dearpygui as dpg
 import os
 from json_config import load_settings
 
-settings = load_settings()
+sett = load_settings()
 
 dpg.create_context()
 
@@ -17,6 +17,8 @@ def start_btn_callback(sender, app_data, user_data):
 
     count = dpg.get_value(progress)
     while count < 1:
+        import time
+        time.sleep(1)
         count = count + 0.01
         dpg.set_value(progress, count)
     dpg.set_value(progress, 0)
@@ -46,7 +48,7 @@ def random_n_callback(sender, app_data, user_data):
         while i <= total:
             with dpg.group(parent=elements, horizontal=True):
                 second = 0
-                while second != settings['window']['columns']:
+                while second != sett['window']['columns']:
                     n_elements.append(dpg.add_input_int(width=100))
                     i += 1
                     second += 1
@@ -66,46 +68,46 @@ with dpg.window(tag="Primary Window"):
             dpg.add_menu_item(label="Show Documentation")
             dpg.add_menu_item(label="Show Debug")
 
-        with dpg.menu(label="Settings"):
+        with dpg.menu(label="settings"):
             dpg.add_menu_item(label="Open settings window")
 
         dpg.add_menu_item(label="About")
 
     dpg.add_text("Number of subnetworks in current network")
-    m_slider = dpg.add_slider_int(label=settings['network']['m_label'], 
-            default_value=settings['network']['m_default'], 
-            min_value=settings['network']['m_min'], 
-            max_value=settings['network']['m_max'])
+    m_slider = dpg.add_slider_int(label=sett['network']['m_label'], 
+            default_value=sett['network']['m_default'], 
+            min_value=sett['network']['m_min'], 
+            max_value=sett['network']['m_max'])
 
     dpg.add_text("Number of elements per subnetwork")
 
     n_checkbox = dpg.add_checkbox(label="N is Constant", default_value=True, callback=variable_n_callback)
 
-    n_slider = dpg.add_slider_int(label=settings['network']['n_label'], 
-            default_value=settings['network']['n_default'], 
-            min_value=settings['network']['n_min'], 
-            max_value=settings['network']['n_max'])
+    n_slider = dpg.add_slider_int(label=sett['network']['n_label'], 
+            default_value=sett['network']['n_default'], 
+            min_value=sett['network']['n_min'], 
+            max_value=sett['network']['n_max'])
 
     with dpg.group() as elements:
         pass
 
-    distribution = dpg.add_combo(items=settings['network']['distributions'],
-            default_value=settings['network']['distributions'][0],
-            label=settings['network']['distr_label'])
+    distribution = dpg.add_combo(items=sett['network']['distributions'],
+            default_value=sett['network']['distributions'][0],
+            label=sett['network']['distr_label'])
 
     with dpg.group(horizontal=True):
         progress = dpg.add_progress_bar(default_value=0.0)
         dpg.add_button(label="Start", callback=start_btn_callback)
 
 with dpg.font_registry():
-    font = dpg.add_font(f"config{os.sep}{settings['window']['font']}", settings['window']['font_size'])
+    font = dpg.add_font(f"config{os.sep}{sett['window']['font']}", sett['window']['font_size'])
 
 dpg.bind_font(font)
 
 
-dpg.create_viewport(title=settings["window"]["title"], 
-        width=settings["window"]["width"], 
-        height=settings["window"]["height"])
+dpg.create_viewport(title=sett["window"]["title"], 
+        width=sett["window"]["width"], 
+        height=sett["window"]["height"])
 
 
 dpg.setup_dearpygui()

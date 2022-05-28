@@ -19,6 +19,7 @@ settings = {
 
         "n_label": "N - Elements",
         "n_min": 1, "n_max": 1000, "n_default": 50,
+        "n_max_rand": 20,
 
         "distr_label": "Distributions",
         "distributions": ["Normal", "Poisson", "Uniform"],
