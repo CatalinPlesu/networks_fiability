@@ -109,26 +109,19 @@ def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
     """
                 experiment to prove that theorem X is true
     """
-    ps_matrix, sp_matrix, theorem_validation_matrix = [], [], []
+    matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
+    ps_matrix, sp_matrix, theorem_validation_matrix = matrix.copy(), matrix.copy(), matrix.copy()
 
-    for m in range(1, max_m + 1):
-        print("progress:", m / (max_m * 1.2) * 100, end="\r")
-        ps_line, sp_line, theorem_line = [], [], []
-        for n in range(1, max_n + 1):
-            network = Network(m, n, n_const, n_list, distribution)
-            sp_line.append(fiability_sp(network))
-            ps_line.append(fiability_ps(network))
-            theorem_line.append(m_n__theorem(network))
-        ps_matrix.append(ps_line)
-        sp_matrix.append(sp_line)
-        theorem_validation_matrix.append(theorem_line)
+    for i in range(max_m):
+        print("progress:", (i + 1) / (max_m * 1.2) * 100, end="\r")
+        for j in range(max_n):
+            network = Network(i+1, j+1, n_const, n_list, distribution)
+            ps_matrix[i][j] = fiability_ps(network)
+            sp_matrix[i][j] = fiability_sp(network)
+            theorem_validation_matrix[i][j] = m_n__theorem(network)
 
     wb_a = create_workbook(distribution)
     pretty_output(wb_a, distribution, sp_matrix, ps_matrix, theorem_validation_matrix) 
-
-
-# for distr in sett['network']['distributions']:
-#     monte_carlo(50, 50, True, None, distribution=distr)
 
 
 if __name__ == "__main__":
