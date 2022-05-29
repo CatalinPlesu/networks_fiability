@@ -117,8 +117,10 @@ def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
     """
                 experiment to prove that theorem X is true
     """
-    matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
-    ps_matrix, sp_matrix, theorem_validation_matrix = matrix.copy(), matrix.copy(), matrix.copy()
+    matrix1 = [[0 for _ in range(max_n)]for _ in range(max_m)]
+    matrix2 = [[0 for _ in range(max_n)]for _ in range(max_m)]
+    matrix3 = [[0 for _ in range(max_n)]for _ in range(max_m)]
+    ps_matrix, sp_matrix, theorem_validation_matrix = matrix1, matrix2, matrix3
 
     for i in range(max_m):
         print("progress:", (i + 1) / (max_m * 1.2) * 100, end="\r")
