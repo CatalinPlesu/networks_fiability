@@ -24,7 +24,7 @@ class Network:
         self.n = n
         self.n_const = n_const
 
-        if not n_list or len(n_list) < m:
+        if (not n_list or len(n_list) < m) and not n_const:
             self.n_list = [np.random.randint(1, sett['network']['n_max_rand']) for _ in range(m)]
         elif n_const:
             self.n_list = [n for _ in range(m)]
@@ -88,11 +88,19 @@ def list_to_array(matrix):
     return np.array([np.array(row) for row in matrix], dtype=object)
 
 def fiability_sp(network):
-    "Series Parallel"
+    """
+                    Series Parallel
+        1. the elements in subnetwork are connected in parallel -> max
+        2. the subnetworks are connected in series -> min
+    """
     return np.array([subnetwork.max() for subnetwork in network.matrix]).min()
 
 def fiability_ps(network):
-    "Parallel Series"
+    """
+                    Parallel Series
+        1. the elements in subnetwork are connected in series -> min
+        2. the subnetworks are connected in parallel -> max
+    """
     return np.array([subnetwork.min() for subnetwork in network.matrix]).max()
 
 def m_n__theorem(network):
