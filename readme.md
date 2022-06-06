@@ -13,7 +13,7 @@ source venv/bin/activate
 
 ### activate virtual enviroment (windows power shell)
 ```
-source venv/bin/Activate.ps1
+.\venv\Scripts\activate.ps1
 ```
 
 #### installation dependencies
