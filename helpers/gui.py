@@ -5,6 +5,8 @@ import os
 from helpers.json_config import load_settings
 
 sett = load_settings()
+
+elements = []
 def start_gui():
     dpg.create_context()
 
@@ -24,6 +26,7 @@ def start_gui():
         dpg.set_value(progress, 0)
 
         
+    global n_elements
     n_elements = []
     def variable_n_callback(sender, app_data, user_data):
         global n_elements 

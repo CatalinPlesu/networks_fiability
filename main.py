@@ -117,10 +117,9 @@ def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
     """
                 experiment to prove that theorem X is true
     """
-    matrix1 = [[0 for _ in range(max_n)]for _ in range(max_m)]
-    matrix2 = [[0 for _ in range(max_n)]for _ in range(max_m)]
-    matrix3 = [[0 for _ in range(max_n)]for _ in range(max_m)]
-    ps_matrix, sp_matrix, theorem_validation_matrix = matrix1, matrix2, matrix3
+    ps_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
+    sp_matrix= [[0 for _ in range(max_n)]for _ in range(max_m)]
+    theorem_validation_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
 
     for i in range(max_m):
         print("progress:", (i + 1) / (max_m * 1.2) * 100, end="\r")
@@ -139,7 +138,7 @@ if __name__ == "__main__":
     print(args)
     if args.gui:
         start_gui()
-    if args.single:
+    elif args.single:
         network = Network(args.m, args.n, args.n_const, args.n_list, args.distribution)
         network.print()
     else:
