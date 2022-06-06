@@ -11,14 +11,12 @@ sett = load_settings()
 
 class Network:
     """
-                    A network is made of subnetworks 
+                    A network is made of subnetworks
                     m - number of subnetworks
                     n - number of elements in a subnetwork
     """
-    def __init__(self, m: int = 50, n: int = 50, n_const: bool = True, 
+    def __init__(self, m: int = 50, n: int = 50, n_const: bool = True,
             n_list: list = None, distribution: str = "Normal"):
-        if n_list != None:
-            n_const = False
 
         self.m = m
         self.n = n
@@ -36,6 +34,7 @@ class Network:
 
     def print(self):
         print()
+        print(f"M: {self.m}; \tN:{self.n}")
         print(f"distribution : {tcolor(self.distribution.capitalize(), color='green')}")
         print(f"N const : {tcolor(str(self.n_const), color='yellow')}")
         print(f"N list : {tcolor(str(self.n_list), color='blue')}")
@@ -50,7 +49,7 @@ class Network:
             min_j = row.argmin()
             max_j = row.argmax()
             for j, cell in enumerate(row):
-                aprox = round(cell, 6) 
+                aprox = round(cell, 6)
                 cell = round(cell, 1)
                 if aprox == sp:
                     print(tcolor(f"{cell}", color=highest, styles=['invert']), end=", ")
@@ -64,8 +63,8 @@ class Network:
                     print(cell, end=", ")
             print()
 
-        ss = tcolor("Serial", color=low, styles=['invert']) 
-        pp = tcolor("Paralell", color=high, styles=['invert']) 
+        ss = tcolor("Serial", color=low, styles=['invert'])
+        pp = tcolor("Paralell", color=high, styles=['invert'])
         print(f"""{ss} {pp} : {tcolor(f"{sp}", color=highest, styles=['invert'])}""")
         print(f"""{pp} {ss} : {tcolor(f"{ps}", color=lowest, styles=['invert'])}""")
 
@@ -107,7 +106,7 @@ def m_n__theorem(network):
     # max n > m PS
     if fiability_sp(network) < fiability_ps(network):
         return "P"
-    elif fiability_sp(network) > fiability_ps(network): 
+    elif fiability_sp(network) > fiability_ps(network):
         return "S"
     else:
         return "B"
@@ -123,6 +122,7 @@ def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
     theorem_validation_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
 
     for i in range(max_m):
+        # 1.2 because cant calculate time taken to create a excel file
         print("progress:", (i + 1) / (max_m * 1.2) * 100, end="\r")
         for j in range(max_n):
             network = Network(i+1, j+1, n_const, n_list, distribution)
@@ -131,7 +131,7 @@ def monte_carlo(max_m: int = 50, max_n: int = 50, n_const: bool = True,
             theorem_validation_matrix[i][j] = m_n__theorem(network)
 
     wb_a = create_workbook(distribution)
-    pretty_output(wb_a, distribution, sp_matrix, ps_matrix, theorem_validation_matrix) 
+    pretty_output(wb_a, distribution, sp_matrix, ps_matrix, theorem_validation_matrix)
 
 
 if __name__ == "__main__":

@@ -18,12 +18,14 @@ def start_gui():
         n_list = []
         n_const = dpg.get_value(n_checkbox)
 
+        for i, n in enumerate(n_elements):
+            n_list.append(dpg.get_value(n))
+
         print(f"M slider : {max_m}")
         print(f"N slider : {max_n}")
         print(f"Distribution : {_distribution}")
-        for i, n in enumerate(n_elements):
-            n_list.append(dpg.get_value(n))
-            print(f"{dpg.get_value(n)}, ", end="")
+        print(f"N const : {n_const}")
+        print(f"N list : {n_list}")
 
         ps_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
         sp_matrix= [[0 for _ in range(max_n)]for _ in range(max_m)]
