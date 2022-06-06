@@ -3,6 +3,7 @@
 import dearpygui.dearpygui as dpg
 import os
 from helpers.json_config import load_settings
+from main import *
 
 sett = load_settings()
 
@@ -11,21 +12,36 @@ def start_gui():
     dpg.create_context()
 
     def start_btn_callback(sender, app_data, user_data):
-        print(f"M slider : {dpg.get_value(m_slider)}")
-        print(f"N slider : {dpg.get_value(n_slider)}")
-        print(f"Distribution : {dpg.get_value(distribution)}")
+        max_m = dpg.get_value(m_slider)
+        max_n = dpg.get_value(n_slider)
+        _distribution = dpg.get_value(distribution)
+        n_list = []
+        n_const = dpg.get_value(n_checkbox)
+
+        print(f"M slider : {max_m}")
+        print(f"N slider : {max_n}")
+        print(f"Distribution : {_distribution}")
         for i, n in enumerate(n_elements):
+            n_list.append(dpg.get_value(n))
             print(f"{dpg.get_value(n)}, ", end="")
 
-        count = dpg.get_value(progress)
-        while count < 1:
-            import time
-            time.sleep(1)
-            count = count + 0.01
-            dpg.set_value(progress, count)
+        ps_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
+        sp_matrix= [[0 for _ in range(max_n)]for _ in range(max_m)]
+        theorem_validation_matrix = [[0 for _ in range(max_n)]for _ in range(max_m)]
+
+        for i in range(max_m):
+            dpg.set_value(progress, (i + 1) / (max_m * 1.2))
+            for j in range(max_n):
+                network = Network(i+1, j+1, n_const, n_list, _distribution)
+                ps_matrix[i][j] = fiability_ps(network)
+                sp_matrix[i][j] = fiability_sp(network)
+                theorem_validation_matrix[i][j] = m_n__theorem(network)
+
+        wb_a = create_workbook(_distribution)
+        pretty_output(wb_a, _distribution, sp_matrix, ps_matrix, theorem_validation_matrix) 
+
         dpg.set_value(progress, 0)
 
-        
     global n_elements
     n_elements = []
     def variable_n_callback(sender, app_data, user_data):

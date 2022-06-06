@@ -64,7 +64,7 @@ class Network:
                     print(cell, end=", ")
             print()
 
-        ss = tcolor("Series", color=low, styles=['invert']) 
+        ss = tcolor("Serial", color=low, styles=['invert']) 
         pp = tcolor("Paralell", color=high, styles=['invert']) 
         print(f"""{ss} {pp} : {tcolor(f"{sp}", color=highest, styles=['invert'])}""")
         print(f"""{pp} {ss} : {tcolor(f"{ps}", color=lowest, styles=['invert'])}""")
@@ -89,21 +89,22 @@ def list_to_array(matrix):
 
 def fiability_sp(network):
     """
-                    Series Parallel
+                    Serial Parallel
         1. the elements in subnetwork are connected in parallel -> max
-        2. the subnetworks are connected in series -> min
+        2. the subnetworks are connected in serial -> min
     """
     return np.array([subnetwork.max() for subnetwork in network.matrix]).min()
 
 def fiability_ps(network):
     """
-                    Parallel Series
-        1. the elements in subnetwork are connected in series -> min
+                    Parallel Serial
+        1. the elements in subnetwork are connected in serial -> min
         2. the subnetworks are connected in parallel -> max
     """
     return np.array([subnetwork.min() for subnetwork in network.matrix]).max()
 
 def m_n__theorem(network):
+    # max n > m PS
     if fiability_sp(network) < fiability_ps(network):
         return "P"
     elif fiability_sp(network) > fiability_ps(network): 
